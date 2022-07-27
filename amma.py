@@ -2,6 +2,7 @@
 # https://www.ravelry.com/patterns/library/amma-cal
 from shapes import Paper, Triangle, Rectangle, Oval
 from enum import Enum, unique
+import random
 
 
 
@@ -138,6 +139,18 @@ def draw_blanket(blanket, paper):
             square.draw()
     paper.display()
 
+def blanket_algorithm(blanket):
+    color_list = list(Color) #generate a list so we can use random integers to select a color
+    square_count = 0
+    # this is a stupid algorithm that only generates random color patterns
+    for row in blanket:
+        for square in row:
+            choice = random.randint(0,8)
+            color_choice = color_list[choice]
+            square.rect2.set_color(color_choice.value)
+            square_count += 1
+    return blanket
+
 
 if __name__ == "__main__":
     paper = Paper(width=1000,height=1000)
@@ -230,7 +243,7 @@ if __name__ == "__main__":
 
     blanket=[row1, row2, row3, row4, row5, row6, row7, row8, row9]
 
-
+    blanket = blanket_algorithm(blanket)
     draw_blanket(blanket, paper)
     count_colors(blanket)
     display_blanket_dict(blanket)

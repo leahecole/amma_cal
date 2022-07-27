@@ -36,3 +36,5 @@ This work is licensed under a
 # Would be nice TODO
 - [x] programmatically generate positioning
 - [x] encode row/column into square object
+
+
