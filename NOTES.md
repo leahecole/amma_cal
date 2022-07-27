@@ -47,5 +47,8 @@ def blanket_algorithm(blanket):
     return blanket
 ```
 
-This screenshot shows that sometimes we still see squares where ther'e two of the same color next to each other, which is a no-no
+This screenshot shows that sometimes we still see squares where the same color can occur twice in a square, which is a no-no
+
 ![Stupid algo screenshot](stupidscreenshot.png)
+
+Now, let's remove the possibility that the same color can be in the same square
