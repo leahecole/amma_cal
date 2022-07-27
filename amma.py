@@ -141,14 +141,20 @@ def draw_blanket(blanket, paper):
 
 def blanket_algorithm(blanket):
     color_list = list(Color) #generate a list so we can use random integers to select a color
-    square_count = 0
     # this is a stupid algorithm that only generates random color patterns
     for row in blanket:
         for square in row:
-            choice = random.randint(0,8)
-            color_choice = color_list[choice]
-            square.rect2.set_color(color_choice.value)
-            square_count += 1
+            choice_1 = random.randint(0,7) #only choose between non base colors
+            choice_2 = random.randint(0,7)
+            choice_3 = random.randint(0,7)
+            color_choice_1 = color_list[choice_1]
+            color_choice_2 = color_list[choice_2]
+            color_choice_3 = color_list[choice_3]
+            square.rect2.set_color(color_choice_1.value)
+            square.rect3.set_color(color_choice_2.value)
+            if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
+                square.rect4.set_color(color_choice_3.value)
+
     return blanket
 
 

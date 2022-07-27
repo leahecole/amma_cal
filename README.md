@@ -31,7 +31,8 @@ This work is licensed under a
 - [x] create enums of the colors used
 - [x] update SAGA squares to fill with the base color on the inner rectangle
 - [x] add functions to compute subsquares with each color
-- [ ] experiment with color
+- [x] experiment with color
+- [ ] add more logic to protect square 4 of Amma.SAGA
 
 # Would be nice TODO
 - [x] programmatically generate positioning
