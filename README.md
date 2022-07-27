@@ -11,7 +11,8 @@ I am a computer scientist and normally I do things zero-indexed when I'm program
 1. If necessary, update the SQUARE_WIDTH constant to be the number of pixels you want your squares to be
 1. run `python amma.py`
 
-
+# Attribution
+The code found in [shapes.py](./shapes.py) came from [this tutorial](https://www.futurelearn.com/info/courses/object-oriented-principles/0/steps/31483) and I am importing it in my main [amma.py](./amma.py) file. 
 
 # TODO
 - [x] start out by making each square only fill with white
