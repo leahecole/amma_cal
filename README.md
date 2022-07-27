@@ -18,7 +18,7 @@ I am a computer scientist and normally I do things zero-indexed when I'm program
 - [x] properly annotate the Amma type of each square
 - [x] create enums of the colors used
 - [x] update SAGA squares to fill with the base color on the inner rectangle
-- [ ] add functions to compute subsquares with each color
+- [x] add functions to compute subsquares with each color
 - [ ] experiment with color
 
 # Would be nice TODO
