@@ -34,6 +34,8 @@ class AmmaSquare(Rectangle):
     def __init__(self, amma=None, row=0, col=0, color_1=Color.BASE, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE):
         # name of the square in the pattern
         self.amma = amma
+        self.row = row
+        self.col = col
         # Aspects of the four squares
         self.rect1 = Rectangle()
         self.rect1.set_width(SQUARE_WIDTH)
@@ -70,6 +72,18 @@ class AmmaSquare(Rectangle):
         self.rect4.x = self.rect3.x + interval
         self.rect4.y = self.rect3.y + interval
 
+    # A function that prints the Amma object as a dictionary
+    def display(self):
+        readable_amma = {
+            "Amma": self.amma.name,
+            "Color 1": self.rect1.color_name,
+            "Color 2": self.rect2.color_name,
+            "Color 3": self.rect3.color_name,
+            "Color 4": self.rect4.color_name,
+            "Row": self.row,
+            "Column": self.col
+        }
+        return readable_amma
 
     def draw(self):
         self.rect1.draw()
@@ -77,16 +91,18 @@ class AmmaSquare(Rectangle):
         self.rect3.draw()
         self.rect4.draw()
 
+def makeAmmaFromDict(ammaDict):
+    return AmmaSquare(amma=Amma[ammaDict["Amma"]], row=ammaDict["Row"], col=ammaDict["Column"], color_1=Color[ammaDict["Color 1"]], color_2=Color[ammaDict["Color 2"]], color_3=Color[ammaDict["Color 3"]], color_4=Color[ammaDict["Color 4"]])
 
 paper = Paper(width=1000,height=1000)
 # TODO(leahecole): update colors
-a1 = AmmaSquare(amma=Amma.SAGA, row=1, col=1, color_2=Color.BASE, color_3=Color.BASE)
-b1 = AmmaSquare(amma=Amma.LOLA, row=1, col=2, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
-c1 = AmmaSquare(amma=Amma.MARIA, row=1, col=3,  color_2=Color.RUSTIC_RED, color_3=Color.BASE, color_4=Color.BASE)
-d1 = AmmaSquare(amma=Amma.THORA, row=1, col=4, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
-e1 = AmmaSquare(amma=Amma.TINNA, row=1, col=5, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
-f1 = AmmaSquare(amma=Amma.SAGA, row=1, col=6, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
-g1 = AmmaSquare(amma=Amma.LOLA, row=1, col=7, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
+a1 = AmmaSquare(amma=Amma.SAGA, row=1, col=1, color_2=Color.CURRY, color_3=Color.ROYAL_BLUE)
+b1 = AmmaSquare(amma=Amma.LOLA, row=1, col=2, color_2=Color.RUSTIC_RED, color_3=Color.BASE, color_4=Color.BASE)
+c1 = AmmaSquare(amma=Amma.MARIA, row=1, col=3,  color_2=Color.ORANGE, color_3=Color.BASE, color_4=Color.BASE)
+d1 = AmmaSquare(amma=Amma.THORA, row=1, col=4, color_2=Color.TURQUOISE, color_3=Color.BASE, color_4=Color.BASE)
+e1 = AmmaSquare(amma=Amma.TINNA, row=1, col=5, color_2=Color.TEAL, color_3=Color.BASE, color_4=Color.BASE)
+f1 = AmmaSquare(amma=Amma.SAGA, row=1, col=6, color_2=Color.PINK, color_3=Color.BASE, color_4=Color.BASE)
+g1 = AmmaSquare(amma=Amma.LOLA, row=1, col=7, color_2=Color.PURPLE, color_3=Color.BASE, color_4=Color.BASE)
 row1 = [a1, b1, c1, d1, e1, f1, g1]
 
 a2 = AmmaSquare(amma=Amma.LOLA, row=2, col=1, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
@@ -190,9 +206,9 @@ def count_colors(squares):
     
 
     #display results
-    print(rect2)
-    print(rect3)
-    print(rect4)
+    print(f"rect2 counts: {rect2}")
+    print(f"rect3 counts: {rect3}")
+    print(f"rect4 counts:{rect4}")
 count_colors(blanket)
-
+print(a1.display())
 paper.display()
