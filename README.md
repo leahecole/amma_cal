@@ -7,7 +7,7 @@ I want to draw a representation of my color planning and to make sure the distri
 I am a computer scientist and normally I do things zero-indexed when I'm programming. But, when I'm crocheting, everything is 1-indexed. In this program, sometimes I don't make things zero indexed and sometimes I do. Oh well! Maybe someday I'll clean it up. Or not!
 
 # Usage
-1. If you want to use this with a different color palette, update the dictionary of colors to have the hex values that you want. 
+1. If you want to use this with a different color palette, update the enum of colors to have the hex values that you want. 
 1. If necessary, update the SQUARE_WIDTH constant to be the number of pixels you want your squares to be
 1. run `python amma.py`
 
