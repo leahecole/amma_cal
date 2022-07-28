@@ -82,3 +82,14 @@ def blanket_algorithm(blanket):
 
 This does the trick! However, I'm directly setting the color in the underlying Rectangle class which then doesn't change the name of the color. I should probably override the superclass of Rectangle for the set_color method to set the color, reset the color name, and to check for Amma SAGA status.
 Eh, or I can just change the color name. Lazy Leah is going to do that because overriding is weird when I have a shape of multiple shapes. 
+
+I just spent a lot of time updating the hex values to more accurately represent the yarns I think I'm going to use which are from [Scheepjes Stone washed](https://www.scheepjes.com/en/stone-washed-440/) and [Scheepjes River Washed](https://www.scheepjes.com/en/river-washed-2317/)
+
+There are a few directions I could go beyond pure randomess for the algorithm. Right now, the counts of color distribution are relatively even overall. Ideally, they're even-ish for each row. Let's start with a visual layout of the types of Amma squares and then puzzle this out with the facts we know:
+
+Visual Layout of Amma distribution
+![Amma layout](ammalayout.png)
+
+- There are 63 squares in the blanket, each of which has 4 subsquares with color - rect1, rect2, rect3, rect4. This technically means that there are 252 squares within squares total (63*4)
+- All rect1s are the Base color, a tan color. This mean there are 63 rect1s that are `Color.BASE`. This leaves 189 subsquares total to care about
+- All Amma squares of type Saga (`Amma.SAGA`) have an innermost subsquare (rect4) of `Color.BASE`. There are `
