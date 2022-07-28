@@ -37,6 +37,8 @@ This work is licensed under a
 - [ ] add more logic to protect square 4 of Amma.SAGA
 - [x] work on even distro algorithm
 - [ ] think about classification tree to decide color distribution
+- [ ] ensure no two squares are identical
+- [ ] incorporate Amma type into decision algorithm (maybe?)
 
 # Would be nice TODO
 - [x] programmatically generate positioning

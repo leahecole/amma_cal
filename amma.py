@@ -42,6 +42,7 @@ class AmmaSquare(Rectangle):
         self.amma = amma
         self.row = row
         self.col = col
+
         # Aspects of the four squares
         self.rect1 = Rectangle()
         self.rect1.set_width(SQUARE_WIDTH)
@@ -51,6 +52,7 @@ class AmmaSquare(Rectangle):
         self.rect1.set_color(color_1.value)
         self.rect1.x = (col-1) * self.rect1.width
         self.rect1.y = (row-1) * self.rect1.width
+        
         self.rect2 = Rectangle()
         self.rect2.set_width(.75*self.rect1.width)
         self.rect2.set_height(.75*self.rect1.height)
@@ -58,6 +60,7 @@ class AmmaSquare(Rectangle):
         self.rect2.set_color(color_2.value)
         self.rect2.x = self.rect1.x + interval
         self.rect2.y = self.rect1.y + interval
+        
         self.rect3 = Rectangle()
         self.rect3.set_width(.5*self.rect1.width)
         self.rect3.set_height(.5*self.rect1.height)
@@ -65,6 +68,7 @@ class AmmaSquare(Rectangle):
         self.rect3.set_color(color_3.value)
         self.rect3.x= self.rect2.x + interval
         self.rect3.y = self.rect2.y + interval
+        
         self.rect4 = Rectangle()
         self.rect4.set_width(.25*self.rect1.width)
         self.rect4.set_height(.25*self.rect1.height)
@@ -98,6 +102,20 @@ class AmmaSquare(Rectangle):
         self.rect3.draw()
         self.rect4.draw()
 
+def ammaEquals(square1: AmmaSquare, square2: AmmaSquare):
+    # create dictionaries of square objects
+    square1 = square1.display()
+    square2 = square2.display()
+
+    # remove Row and Column which would always make this return false
+    del(square1["Row"])
+    del(square1["Column"])
+    del(square2["Row"])
+    del(square2["Column"])
+
+    # compare based on remaining keys, which are the colors
+    return square1==square2
+    
 def makeAmmaFromDict(ammaDict):
     return AmmaSquare(amma=Amma[ammaDict["Amma"]], row=ammaDict["Row"], col=ammaDict["Column"], color_1=Color[ammaDict["Color 1"]], color_2=Color[ammaDict["Color 2"]], color_3=Color[ammaDict["Color 3"]], color_4=Color[ammaDict["Color 4"]])
 
@@ -187,42 +205,35 @@ def random_blanket_algorithm(blanket):
     return blanket
 
 def even_distro_blanket_algorithm(blanket):
-    # totals = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0} #count of squares with each color
+
     rect2 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     rect3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     rect4 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     color_list = list(Color) #generate a list so we can use random integers to select a color
     # this is an algorithm to make even color distrubition in each row. I refactored it while very tired and it's very ugly
-    # TODO remove repeated code
-    # TODO remove print statements
+    def remove_choice(choices, choice):
+        try:
+            choices.remove(choice)
+        except ValueError:
+            log = f"Choice {choice} not in choices. Likely ineligible for other reasons"
+            #print(log)
+        finally:
+            return choices
+
     for row in blanket:
         for square in row:
-            # choices = [0,1,2,3,4,5,6,7]
-            #newlist = totals.keys()
-            #choices = []
-            print("totals")
-            print(rect2)
-            print(rect3)
-            print(rect4)
+
             choices = [choice for choice in rect2.keys() if rect2[choice] < 8]       
             choice_1 = random.choice(choices) #only choose between non base colors
             rect2[choice_1]+=1
-            choices = [choice for choice in rect3.keys() if rect3[choice] < 8]       
-            try:
-                choices.remove(choice_1)
-            except ValueError:
-                print("choice_1 not there")
+            choices = [choice for choice in rect3.keys() if rect3[choice] < 8]    
+            choices = remove_choice(choices, choice_1)   
+
             choice_2 = random.choice(choices)
             rect3[choice_2]+=1
             choices = [choice for choice in rect4.keys() if rect4[choice] < 7] #this limit is smaller because there are only 51 possible squares instead of 63 like in other rounds       
-            try:
-                choices.remove(choice_2)
-            except ValueError:
-                print("choice_2 not there")
-            try:
-                choices.remove(choice_1)
-            except ValueError:
-                print("choice_1 not there")
+            choices = remove_choice(choices, choice_1) 
+            choices = remove_choice(choices, choice_2)   
             choice_3 = random.choice(choices)
             color_choice_1 = color_list[choice_1]
             color_choice_2 = color_list[choice_2]
@@ -330,12 +341,13 @@ if __name__ == "__main__":
 
 
     blanket=[row1, row2, row3, row4, row5, row6, row7, row8, row9]
-
+    print(ammaEquals(a3, f3))
     # blanket = random_blanket_algorithm(blanket)
     blanket = even_distro_blanket_algorithm(blanket)
 
     count_colors(blanket)
 
     draw_blanket(blanket, paper)
+    
     # display_blanket_dict(blanket)
 

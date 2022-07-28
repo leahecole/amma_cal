@@ -1,14 +1,7 @@
-# Ideas
-1. create a base ammadict with fixed Amma types defined but colors left blanket
-1. use premade amma, convert to dict, modify, pass back as obj
-1. use premade amma, modify obj directly
-
 # List of words that have lost all meaning because I have typed them too many times in this project
 - Color
 - Choice
 - Square
-
-## use premade amma, modify obj directly
 
 I already took the time to work out the Amma layout by type and they have random colors. I'll use this for now out of sheer laziness. 
 
@@ -117,3 +110,10 @@ totals: {'PINK': 23, 'TEAL': 20, 'CURRY': 23, 'RUSTIC_RED': 23, 'PURPLE': 19, 'O
 I think my next step is to try to even things out by making sure the inner rects have limits too. Beyond that, I might start needing to think about this as a tree or graph and modify the data structure to properly traverse it.
 
 Actually, my first stop is going to be to remove the 23 limit and only try doing the inner limit of 8 on each color. Ok, it works fine. However, the limit probably needs to not be 8 on the inner one because we'll have the 12 bases always. It should be 7.
+
+This works kind of ok, though it depends on how the distribution goes. I also want to add logic so no two squares are identical. 
+
+To do equals
+- make a comparison function that checks equality of the colors within. 
+- store squares in a dict
+- when you make a new square, check dict before proceeding
