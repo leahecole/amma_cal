@@ -87,7 +87,8 @@ I just spent a lot of time updating the hex values to more accurately represent 
 
 There are a few directions I could go beyond pure randomess for the algorithm. Right now, the counts of color distribution are relatively even overall. Ideally, they're even-ish for each row. Let's start with a visual layout of the types of Amma squares and then puzzle this out with the facts we know:
 
-Visual Layout of Amma distribution
+### Visual Layout of Amma distribution
+
 ![Amma layout](ammalayout.png)
 
 - There are 63 squares in the blanket, each of which has 4 subsquares with color - rect1, rect2, rect3, rect4. This technically means that there are 252 squares within squares total (63*4)
