@@ -1,6 +1,6 @@
 # A tool for me to do color planning for the Amma Cal blanket
 # https://www.ravelry.com/patterns/library/amma-cal
-from shapes import Paper, Triangle, Rectangle, Oval
+from shapes import Paper, Rectangle, Shape
 from enum import Enum, unique
 import random
 
@@ -15,17 +15,22 @@ class Amma(Enum):
     TINNA = 4
 
 # colors that will be used which correspond to the "Happy Granny" colorway
+# I eyeballed hex values based on what I saw in the pattern
+# These will be yarns from the Scheepjes Stone Washed/River Washed line
+# https://www.scheepjes.com/en/stone-washed-440/
+# https://www.scheepjes.com/en/river-washed-2317/
+
 @unique
 class Color(Enum):
-    CURRY = "#CB9834"
-    ORANGE = "#F76A25"
-    RUSTIC_RED = "#C50909"
-    PINK = "#E264B7"
-    PURPLE = "#7A1FAE"
-    ROYAL_BLUE = "#295198"
-    TURQUOISE = "#2DBBDE"
-    TEAL = "#236A65"
-    BASE = "#E7D8BB"
+    CURRY = "#CB9834" # come back to this
+    ORANGE = "#F76A25" # River Washed 961
+    RUSTIC_RED = "#C50909" # River washed 956
+    PINK = "#E264B7" # Stone Washed 836
+    PURPLE = "#6B0CEB" # River Washed 949
+    ROYAL_BLUE = "#0B8DD0" #stone washed 805
+    TURQUOISE = "#2DBBDE" # River washed 950
+    TEAL = "#108E45" # River Washed 958
+    BASE = "#E7D8BB" # Boulder Opal
 
 # CONSTANTS
 SQUARE_WIDTH = 50
@@ -73,6 +78,7 @@ class AmmaSquare(Rectangle):
         self.rect4.x = self.rect3.x + interval
         self.rect4.y = self.rect3.y + interval
 
+
     # A function that prints the parts of the Amma object I care about as a dictionary
     def display(self):
         readable_amma = {
@@ -102,6 +108,7 @@ def count_colors(squares):
     rect4 = {}
     for row in squares:
         for square in row:
+            print(square.display())
             try:
                 rect2[square.rect2.color_name] += 1
             except KeyError:
@@ -115,13 +122,29 @@ def count_colors(squares):
             except KeyError:
                 rect4[square.rect4.color_name] = 1
 
+    totals = {}
+    for key in rect2.keys():
+        try:
+            totals[key] += rect2[key]
+        except KeyError:
+            totals[key] = rect2[key]
+    #this is guaranteed to not have KeyErrors if it runs after rect2 
+    #so I'm not checking because I'm lazy
+    for key in rect3.keys(): 
+        totals[key] += rect3[key]
+    #this could throw a keyerror because it introduces "Base" as an option
+    for key in rect4.keys(): 
+        try:
+            totals[key] += rect4[key]
+        except KeyError:
+            totals[key] = rect4[key]
     
 
     #display results
     print(f"rect2 counts: {rect2}")
     print(f"rect3 counts: {rect3}")
     print(f"rect4 counts:{rect4}")
-
+    print(f"totals: {totals}")
 
 # Display dicts of final blanket
 def display_blanket_dict(blanket):
@@ -144,16 +167,22 @@ def blanket_algorithm(blanket):
     # this is a stupid algorithm that only generates random color patterns
     for row in blanket:
         for square in row:
-            choice_1 = random.randint(0,7) #only choose between non base colors
-            choice_2 = random.randint(0,7)
-            choice_3 = random.randint(0,7)
+            choices = [0,1,2,3,4,5,6,7]
+            choice_1 = random.choice(choices) #only choose between non base colors
+            choices.remove(choice_1)
+            choice_2 = random.choice(choices)
+            choices.remove(choice_2)
+            choice_3 = random.choice(choices)
             color_choice_1 = color_list[choice_1]
             color_choice_2 = color_list[choice_2]
             color_choice_3 = color_list[choice_3]
             square.rect2.set_color(color_choice_1.value)
+            square.rect2.color_name = color_choice_1.name 
             square.rect3.set_color(color_choice_2.value)
+            square.rect3.color_name = color_choice_2.name
             if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
                 square.rect4.set_color(color_choice_3.value)
+                square.rect4.color_name = color_choice_3.name 
 
     return blanket
 
@@ -250,7 +279,8 @@ if __name__ == "__main__":
     blanket=[row1, row2, row3, row4, row5, row6, row7, row8, row9]
 
     blanket = blanket_algorithm(blanket)
-    draw_blanket(blanket, paper)
     count_colors(blanket)
-    display_blanket_dict(blanket)
+
+    draw_blanket(blanket, paper)
+    # display_blanket_dict(blanket)
 
