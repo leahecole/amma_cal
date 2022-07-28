@@ -92,4 +92,10 @@ Visual Layout of Amma distribution
 
 - There are 63 squares in the blanket, each of which has 4 subsquares with color - rect1, rect2, rect3, rect4. This technically means that there are 252 squares within squares total (63*4)
 - All rect1s are the Base color, a tan color. This mean there are 63 rect1s that are `Color.BASE`. This leaves 189 subsquares total to care about
-- All Amma squares of type Saga (`Amma.SAGA`) have an innermost subsquare (rect4) of `Color.BASE`. There are `
+- All Amma squares of type Saga (`Amma.SAGA`) have an innermost subsquare (rect4) of `Color.BASE`. There are 12 `Amma.SAGA` squares in this layout. This leaves 177 squares to care about
+- There are 8 non-base colors in the colorway. This means that in an ideal world, assuming I treat all subsquares equally[^1], there should be approximately 22 of each color in total split between rect2s, rect3s, rect4s. 
+- I probably want an even split betwen rect2s, rect3s, rect4s, which means roughly 7 in each of those
+
+I have more opinions about color distribution - for example, I don't think there should be two identical squares, or two squares with rect2s that are identical touching, but that's for future Leah to explore. This is enough to go off of for now with what I have.
+
+[^1]: This is a big assumption. Some subsquares are larger than others and it may not be an aesthetically pleasing strategy to treat rect2s equal to rect4s, which theoretically have less. However, this pattern is not actually concentric squares but features varying intricate mosaic patterns, so this actually might not be a horrible assumption. If this were granny squares though, this is not the best assumption. 
