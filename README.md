@@ -35,6 +35,7 @@ This work is licensed under a
 - [x] add functions to compute subsquares with each color
 - [x] experiment with color
 - [ ] add more logic to protect square 4 of Amma.SAGA
+- [ ] work on even distro algorithm
 
 # Would be nice TODO
 - [x] programmatically generate positioning

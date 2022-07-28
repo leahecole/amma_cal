@@ -108,7 +108,7 @@ def count_colors(squares):
     rect4 = {}
     for row in squares:
         for square in row:
-            print(square.display())
+            # print(square.display())
             try:
                 rect2[square.rect2.color_name] += 1
             except KeyError:
@@ -162,7 +162,7 @@ def draw_blanket(blanket, paper):
             square.draw()
     paper.display()
 
-def blanket_algorithm(blanket):
+def random_blanket_algorithm(blanket):
     color_list = list(Color) #generate a list so we can use random integers to select a color
     # this is a stupid algorithm that only generates random color patterns
     for row in blanket:
@@ -183,6 +183,40 @@ def blanket_algorithm(blanket):
             if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
                 square.rect4.set_color(color_choice_3.value)
                 square.rect4.color_name = color_choice_3.name 
+
+    return blanket
+
+def even_distro_blanket_algorithm(blanket):
+    #TODO: modify to actually count how many of each subsquare there are - don't allow more than 22 per color or maybe 23/24
+    totals = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0} #count of squares with each color
+    color_list = list(Color) #generate a list so we can use random integers to select a color
+    # this is a stupid algorithm that only generates random color patterns
+    for row in blanket:
+        for square in row:
+            # choices = [0,1,2,3,4,5,6,7]
+            #newlist = totals.keys()
+            #choices = []
+            print(totals)
+            choices = [choice for choice in totals.keys() if totals[choice] < 23]       
+            choice_1 = random.choice(choices) #only choose between non base colors
+            totals[choice_1]+=1
+            choices.remove(choice_1)
+            choice_2 = random.choice(choices)
+            totals[choice_2]+=1
+            choices.remove(choice_2)
+            choice_3 = random.choice(choices)
+            color_choice_1 = color_list[choice_1]
+            color_choice_2 = color_list[choice_2]
+            color_choice_3 = color_list[choice_3]
+            square.rect2.set_color(color_choice_1.value)
+            square.rect2.color_name = color_choice_1.name 
+            square.rect3.set_color(color_choice_2.value)
+            square.rect3.color_name = color_choice_2.name
+            if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
+                square.rect4.set_color(color_choice_3.value)
+                square.rect4.color_name = color_choice_3.name
+                totals[choice_3]+=1
+ 
 
     return blanket
 
@@ -278,7 +312,9 @@ if __name__ == "__main__":
 
     blanket=[row1, row2, row3, row4, row5, row6, row7, row8, row9]
 
-    blanket = blanket_algorithm(blanket)
+    # blanket = random_blanket_algorithm(blanket)
+    blanket = even_distro_blanket_algorithm(blanket)
+
     count_colors(blanket)
 
     draw_blanket(blanket, paper)

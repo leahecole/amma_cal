@@ -81,15 +81,15 @@ def blanket_algorithm(blanket):
 ```
 
 This does the trick! However, I'm directly setting the color in the underlying Rectangle class which then doesn't change the name of the color. I should probably override the superclass of Rectangle for the set_color method to set the color, reset the color name, and to check for Amma SAGA status.
-Eh, or I can just change the color name. Lazy Leah is going to do that because overriding is weird when I have a shape of multiple shapes. 
+Eh, or I can just change the color name. Lazy Leah is going to do that because overriding is weird when I have a Shape of multiple Shapes. 
 
-I just spent a lot of time updating the hex values to more accurately represent the yarns I think I'm going to use which are from [Scheepjes Stone washed](https://www.scheepjes.com/en/stone-washed-440/) and [Scheepjes River Washed](https://www.scheepjes.com/en/river-washed-2317/)
+I took a break from the algorithm and I just spent a lot of time updating the hex values to more accurately represent the yarns I think I'm going to use which are from [Scheepjes Stone washed](https://www.scheepjes.com/en/stone-washed-440/) and [Scheepjes River Washed](https://www.scheepjes.com/en/river-washed-2317/)
 
 There are a few directions I could go beyond pure randomess for the algorithm. Right now, the counts of color distribution are relatively even overall. Ideally, they're even-ish for each row. Let's start with a visual layout of the types of Amma squares and then puzzle this out with the facts we know:
 
 ### Visual Layout of Amma distribution
 
-![Amma layout](ammalayout.png)
+![Amma layout. This is a screenshot of a Google doc where the first row is Maria, Thora, Tinna, Saga, Lola, Maria, Thora, and each subsequent row shifts one to the left. For example, the second row is Thora, Tinna, Saga, Lola, Maria, Thora, and Tinna. The pattern continues for 9 total rows each with 7 squares for a total of 63 squares](ammalayout.png)
 
 - There are 63 squares in the blanket, each of which has 4 subsquares with color - rect1, rect2, rect3, rect4. This technically means that there are 252 squares within squares total (63*4)
 - All rect1s are the Base color, a tan color. This mean there are 63 rect1s that are `Color.BASE`. This leaves 189 subsquares total to care about
@@ -100,3 +100,5 @@ There are a few directions I could go beyond pure randomess for the algorithm. R
 I have more opinions about color distribution - for example, I don't think there should be two identical squares, or two squares with rect2s that are identical touching, but that's for future Leah to explore. This is enough to go off of for now with what I have.
 
 [^1]: This is a big assumption. Some subsquares are larger than others and it may not be an aesthetically pleasing strategy to treat rect2s equal to rect4s, which theoretically have less. However, this pattern is not actually concentric squares but features varying intricate mosaic patterns, so this actually might not be a horrible assumption. If this were granny squares though, this is not the best assumption. 
+
+Made `even_distro_blanket_algorithm` - the initial version operates under the assumptions from above and makes sure there's no more than 23 subsquares of any given color. It does not yet try to even out distribution by level of subsquare though
