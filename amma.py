@@ -187,23 +187,42 @@ def random_blanket_algorithm(blanket):
     return blanket
 
 def even_distro_blanket_algorithm(blanket):
-    #TODO: modify to actually count how many of each subsquare there are - don't allow more than 22 per color or maybe 23/24
-    totals = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0} #count of squares with each color
+    # totals = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0} #count of squares with each color
+    rect2 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
+    rect3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
+    rect4 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     color_list = list(Color) #generate a list so we can use random integers to select a color
-    # this is a stupid algorithm that only generates random color patterns
+    # this is an algorithm to make even color distrubition in each row. I refactored it while very tired and it's very ugly
+    # TODO remove repeated code
+    # TODO remove print statements
     for row in blanket:
         for square in row:
             # choices = [0,1,2,3,4,5,6,7]
             #newlist = totals.keys()
             #choices = []
-            print(totals)
-            choices = [choice for choice in totals.keys() if totals[choice] < 23]       
+            print("totals")
+            print(rect2)
+            print(rect3)
+            print(rect4)
+            choices = [choice for choice in rect2.keys() if rect2[choice] < 8]       
             choice_1 = random.choice(choices) #only choose between non base colors
-            totals[choice_1]+=1
-            choices.remove(choice_1)
+            rect2[choice_1]+=1
+            choices = [choice for choice in rect3.keys() if rect3[choice] < 8]       
+            try:
+                choices.remove(choice_1)
+            except ValueError:
+                print("choice_1 not there")
             choice_2 = random.choice(choices)
-            totals[choice_2]+=1
-            choices.remove(choice_2)
+            rect3[choice_2]+=1
+            choices = [choice for choice in rect4.keys() if rect4[choice] < 7] #this limit is smaller because there are only 51 possible squares instead of 63 like in other rounds       
+            try:
+                choices.remove(choice_2)
+            except ValueError:
+                print("choice_2 not there")
+            try:
+                choices.remove(choice_1)
+            except ValueError:
+                print("choice_1 not there")
             choice_3 = random.choice(choices)
             color_choice_1 = color_list[choice_1]
             color_choice_2 = color_list[choice_2]
@@ -215,7 +234,7 @@ def even_distro_blanket_algorithm(blanket):
             if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
                 square.rect4.set_color(color_choice_3.value)
                 square.rect4.color_name = color_choice_3.name
-                totals[choice_3]+=1
+                rect4[choice_3]+=1
  
 
     return blanket

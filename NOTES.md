@@ -101,4 +101,19 @@ I have more opinions about color distribution - for example, I don't think there
 
 [^1]: This is a big assumption. Some subsquares are larger than others and it may not be an aesthetically pleasing strategy to treat rect2s equal to rect4s, which theoretically have less. However, this pattern is not actually concentric squares but features varying intricate mosaic patterns, so this actually might not be a horrible assumption. If this were granny squares though, this is not the best assumption. 
 
-Made `even_distro_blanket_algorithm` - the initial version operates under the assumptions from above and makes sure there's no more than 23 subsquares of any given color. It does not yet try to even out distribution by level of subsquare though
+Made `even_distro_blanket_algorithm` - the initial version operates under the assumptions from above and makes sure there's no more than 23 subsquares of any given color. It does not yet try to even out distribution by level of subsquare though. The image below shows output from this algorithm
+
+![even distro - color distribution is not bad but there is more rect3 with orange than any other color, for example](even_distro_1.png)
+
+The counts for each are as follows (maybe I'll format this prettier someday) - items to note are the majority of orange squares are in rect3, and that there are 23 of multiple colors but only 19 purple. Ideally that wouldn't happen. 
+
+```python
+rect2 counts: {'PINK': 8, 'TEAL': 8, 'CURRY': 10, 'RUSTIC_RED': 5, 'PURPLE': 10, 'ORANGE': 6, 'TURQUOISE': 6, 'ROYAL_BLUE': 10}
+rect3 counts: {'RUSTIC_RED': 9, 'CURRY': 9, 'PINK': 5, 'TURQUOISE': 8, 'TEAL': 6, 'PURPLE': 6, 'ROYAL_BLUE': 8, 'ORANGE': 12}
+rect4 counts:{'BASE': 12, 'TEAL': 6, 'ROYAL_BLUE': 5, 'RUSTIC_RED': 9, 'TURQUOISE': 9, 'PINK': 10, 'CURRY': 4, 'ORANGE': 5, 'PURPLE': 3}
+totals: {'PINK': 23, 'TEAL': 20, 'CURRY': 23, 'RUSTIC_RED': 23, 'PURPLE': 19, 'ORANGE': 23, 'TURQUOISE': 23, 'ROYAL_BLUE': 23, 'BASE': 12}
+```
+
+I think my next step is to try to even things out by making sure the inner rects have limits too. Beyond that, I might start needing to think about this as a tree or graph and modify the data structure to properly traverse it.
+
+Actually, my first stop is going to be to remove the 23 limit and only try doing the inner limit of 8 on each color. Ok, it works fine. However, the limit probably needs to not be 8 on the inner one because we'll have the 12 bases always. It should be 7.
