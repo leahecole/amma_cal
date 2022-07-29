@@ -117,3 +117,5 @@ To do equals
 - make a comparison function that checks equality of the colors within. 
 - store squares in a dict
 - when you make a new square, check dict before proceeding
+
+track square and check for dupes are kind of messed up and the weird three number key isn't working great

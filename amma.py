@@ -34,6 +34,7 @@ class Color(Enum):
 
 # CONSTANTS
 SQUARE_WIDTH = 50
+COLOR_LIST = list(Color) #generate a list so we can use random integers to select a color
 
 class AmmaSquare(Rectangle):
 
@@ -95,6 +96,13 @@ class AmmaSquare(Rectangle):
             "Column": self.col
         }
         return readable_amma
+
+    def display_colors(self):
+        colors = self.display()
+        del(colors["Amma"])
+        del(colors["Row"])
+        del(colors["Column"])
+        return colors
 
     def draw(self):
         self.rect1.draw()
@@ -173,15 +181,11 @@ def display_blanket_dict(blanket):
             print(f"{str(column[square])}{str(row+1)} = {blanket[row][square].display()}")
 
 def draw_blanket(blanket, paper):
-
-        # draw
-    for row in blanket:
-        for square in row:
-            square.draw()
+    for square in blanket:
+        square.draw()
     paper.display()
 
 def random_blanket_algorithm(blanket):
-    color_list = list(Color) #generate a list so we can use random integers to select a color
     # this is a stupid algorithm that only generates random color patterns
     for row in blanket:
         for square in row:
@@ -191,9 +195,9 @@ def random_blanket_algorithm(blanket):
             choice_2 = random.choice(choices)
             choices.remove(choice_2)
             choice_3 = random.choice(choices)
-            color_choice_1 = color_list[choice_1]
-            color_choice_2 = color_list[choice_2]
-            color_choice_3 = color_list[choice_3]
+            color_choice_1 = COLOR_LIST[choice_1]
+            color_choice_2 = COLOR_LIST[choice_2]
+            color_choice_3 = COLOR_LIST[choice_3]
             square.rect2.set_color(color_choice_1.value)
             square.rect2.color_name = color_choice_1.name 
             square.rect3.set_color(color_choice_2.value)
@@ -205,11 +209,11 @@ def random_blanket_algorithm(blanket):
     return blanket
 
 def even_distro_blanket_algorithm(blanket):
+    squares = {}
 
     rect2 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     rect3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     rect4 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
-    color_list = list(Color) #generate a list so we can use random integers to select a color
     # this is an algorithm to make even color distrubition in each row. I refactored it while very tired and it's very ugly
     def remove_choice(choices, choice):
         try:
@@ -219,36 +223,80 @@ def even_distro_blanket_algorithm(blanket):
             #print(log)
         finally:
             return choices
+    def set_color(square):
+        # sets the colors but also returns a 3 number color that can be used for tracking
+        # choose color one from all of the colors, as long as it hasn't been used 8 times
+        choices = [choice for choice in rect2.keys() if rect2[choice] < 8]       
+        choice_1 = random.choice(choices) #only choose between non base colors
+        rect2[choice_1]+=1
+        
+        # choose color 2 from all of the colors as long as it hasn't been used 8 times
+        # and it wasn't color 1
+        choices = [choice for choice in rect3.keys() if rect3[choice] < 8]    
+        choices = remove_choice(choices, choice_1)   
+        choice_2 = random.choice(choices)
+        rect3[choice_2]+=1
 
-    for row in blanket:
-        for square in row:
+        # choose color 3 from all of the colors as long as it hasn't been used 7 times
+        # and it wasn't color 1 or color 2
+        choices = [choice for choice in rect4.keys() if rect4[choice] < 7] #this limit is smaller because there are only 51 possible squares instead of 63 like in other rounds       
+        choices = remove_choice(choices, choice_1) 
+        choices = remove_choice(choices, choice_2)   
+        choice_3 = random.choice(choices)
 
-            choices = [choice for choice in rect2.keys() if rect2[choice] < 8]       
-            choice_1 = random.choice(choices) #only choose between non base colors
-            rect2[choice_1]+=1
-            choices = [choice for choice in rect3.keys() if rect3[choice] < 8]    
-            choices = remove_choice(choices, choice_1)   
+        # Actually get the color
+        color_choice_1 = COLOR_LIST[choice_1]
+        color_choice_2 = COLOR_LIST[choice_2]
+        color_choice_3 = COLOR_LIST[choice_3]
 
-            choice_2 = random.choice(choices)
-            rect3[choice_2]+=1
-            choices = [choice for choice in rect4.keys() if rect4[choice] < 7] #this limit is smaller because there are only 51 possible squares instead of 63 like in other rounds       
-            choices = remove_choice(choices, choice_1) 
-            choices = remove_choice(choices, choice_2)   
-            choice_3 = random.choice(choices)
-            color_choice_1 = color_list[choice_1]
-            color_choice_2 = color_list[choice_2]
-            color_choice_3 = color_list[choice_3]
-            square.rect2.set_color(color_choice_1.value)
-            square.rect2.color_name = color_choice_1.name 
-            square.rect3.set_color(color_choice_2.value)
-            square.rect3.color_name = color_choice_2.name
-            if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
-                square.rect4.set_color(color_choice_3.value)
-                square.rect4.color_name = color_choice_3.name
-                rect4[choice_3]+=1
- 
+        # set the appropriate attributes of the squares
+        square.rect2.set_color(color_choice_1.value)
+        square.rect2.color_name = color_choice_1.name 
+        square.rect3.set_color(color_choice_2.value)
+        square.rect3.color_name = color_choice_2.name
+
+        if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
+            square.rect4.set_color(color_choice_3.value)
+            square.rect4.color_name = color_choice_3.name
+            rect4[choice_3]+=1
+        return f"{color_choice_1}{color_choice_2}{color_choice_3}"
+    def track_square(square):
+        # tracks squares with a 3 character key that corresponds to color numbers (not great) 
+        try:
+            squares[square]+=1
+        except KeyError:
+            squares[square] = 1
+
+    for square in blanket:
+        colors = set_color(square)
+        track_square(colors)
+    # for row in blanket:
+    #     for square in row:
+    #         colors = set_color(square)
+    #         track_square(colors)
+    # def even_distro_no_repeats(squares,blanket):
+    #     print(len(squares.keys()), len(blanket))
+    # # base case - there are no squares left, return
+    #     if len(blanket) == 0:
+    #         return
+    #     else:
+    #         colors = set_color(blanket[0])
+    #         try:
+    #             squares[colors] == 1 # don't change the value, we don't want to increment
+    #             return even_distro_no_repeats(squares, blanket)
+    #         except KeyError:
+    #             squares[colors] = 1
+    #             return even_distro_no_repeats(squares, blanket[1:])
+    #         # for first square in blanket 
+    #         # make a color combo, check it in squares
+    #         # if it's not there, add it to squares, return even_distro_no_repeats(squares, blanket[1:])
+    #         # if it is there, return even_distro_no_repeats(squares, blanket) (try)
+    # blanket = even_distro_no_repeats(squares,blanket)
+            
+    # print(squares)
 
     return blanket
+
 
 
 if __name__ == "__main__":
@@ -339,13 +387,12 @@ if __name__ == "__main__":
     row8 = [a8, b8, c8, d8, e8, f8, g8]
     row9 = [a9, b9, c9, d9, e9, f9, g9]
 
-
-    blanket=[row1, row2, row3, row4, row5, row6, row7, row8, row9]
-    print(ammaEquals(a3, f3))
+    blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
+    print(blanket)
     # blanket = random_blanket_algorithm(blanket)
     blanket = even_distro_blanket_algorithm(blanket)
 
-    count_colors(blanket)
+    #count_colors(blanket)
 
     draw_blanket(blanket, paper)
     
