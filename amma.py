@@ -132,21 +132,20 @@ def count_colors(squares):
     rect2 = {}
     rect3 = {}
     rect4 = {}
-    for row in squares:
-        for square in row:
-            # print(square.display())
-            try:
-                rect2[square.rect2.color_name] += 1
-            except KeyError:
-                rect2[square.rect2.color_name] = 1
-            try:
-                rect3[square.rect3.color_name] += 1
-            except KeyError:
-                rect3[square.rect3.color_name] = 1
-            try:
-                rect4[square.rect4.color_name] += 1
-            except KeyError:
-                rect4[square.rect4.color_name] = 1
+    for square in squares:
+        # print(square.display())
+        try:
+            rect2[square.rect2.color_name] += 1
+        except KeyError:
+            rect2[square.rect2.color_name] = 1
+        try:
+            rect3[square.rect3.color_name] += 1
+        except KeyError:
+            rect3[square.rect3.color_name] = 1
+        try:
+            rect4[square.rect4.color_name] += 1
+        except KeyError:
+            rect4[square.rect4.color_name] = 1
 
     totals = {}
     for key in rect2.keys():
@@ -173,6 +172,8 @@ def count_colors(squares):
     print(f"totals: {totals}")
 
 # Display dicts of final blanket
+#TODO refactor to not rely on nested list structure
+# NOTE THIS CURRENTLY WON'T WORK
 def display_blanket_dict(blanket):
     column = ["a", "b", "c", "d", "e", "f", "g"]
 
@@ -226,7 +227,8 @@ def even_distro_blanket_algorithm(blanket):
     def set_color(square):
         # sets the colors but also returns a 3 number color that can be used for tracking
         # choose color one from all of the colors, as long as it hasn't been used 8 times
-        choices = [choice for choice in rect2.keys() if rect2[choice] < 8]       
+        choices = [choice for choice in rect2.keys() if rect2[choice] < 8]      
+ 
         choice_1 = random.choice(choices) #only choose between non base colors
         rect2[choice_1]+=1
         
@@ -259,7 +261,7 @@ def even_distro_blanket_algorithm(blanket):
             square.rect4.set_color(color_choice_3.value)
             square.rect4.color_name = color_choice_3.name
             rect4[choice_3]+=1
-        return f"{color_choice_1}{color_choice_2}{color_choice_3}"
+        return f"{choice_1}{choice_2}{choice_3}"
     def track_square(square):
         # tracks squares with a 3 character key that corresponds to color numbers (not great) 
         try:
@@ -267,35 +269,42 @@ def even_distro_blanket_algorithm(blanket):
         except KeyError:
             squares[square] = 1
 
-    for square in blanket:
-        colors = set_color(square)
-        track_square(colors)
-    # for row in blanket:
-    #     for square in row:
-    #         colors = set_color(square)
-    #         track_square(colors)
-    # def even_distro_no_repeats(squares,blanket):
-    #     print(len(squares.keys()), len(blanket))
-    # # base case - there are no squares left, return
-    #     if len(blanket) == 0:
-    #         return
-    #     else:
-    #         colors = set_color(blanket[0])
-    #         try:
-    #             squares[colors] == 1 # don't change the value, we don't want to increment
-    #             return even_distro_no_repeats(squares, blanket)
-    #         except KeyError:
-    #             squares[colors] = 1
-    #             return even_distro_no_repeats(squares, blanket[1:])
-    #         # for first square in blanket 
-    #         # make a color combo, check it in squares
-    #         # if it's not there, add it to squares, return even_distro_no_repeats(squares, blanket[1:])
-    #         # if it is there, return even_distro_no_repeats(squares, blanket) (try)
-    # blanket = even_distro_no_repeats(squares,blanket)
-            
-    # print(squares)
+    # for square in blanket:
+    #     colors = set_color(square)
+    #     track_square(colors)
 
-    return blanket
+    # this makes an even distro but it doesn't return the object when it's done
+    def even_distro_no_repeats(squares, blanket, blanket_out):
+        print(len(squares.keys()), len(blanket))
+    # base case - there are no squares left, return
+        if len(blanket) == 0:
+            print("hello")
+            return blanket_out
+        else:
+
+            colors = set_color(blanket[0])
+            print(colors)
+            try:
+                squares[colors] = 1 # don't change the value, we don't want to increment
+                # remove colors from rect dicts - colors is a 3 digit integer
+                rect2[int(colors[0])]-=1
+                rect3[int(colors[1])]-=1
+                rect4[int(colors[2])]-=1
+                return even_distro_no_repeats(squares, blanket, blanket_out)
+            except KeyError:
+                print("yo")
+                squares[colors] = 1
+                blanket_out.append(blanket[0])
+                return even_distro_no_repeats(squares, blanket[1:], blanket_out)
+            # for first square in blanket 
+            # make a color combo, check it in squares
+            # if it's not there, add it to squares, return even_distro_no_repeats(squares, blanket[1:])
+            # if it is there, return even_distro_no_repeats(squares, blanket) (try)
+    blanket = even_distro_no_repeats(squares,blanket, [])
+            
+    print(squares)
+
+    return blanket, squares
 
 
 
@@ -388,10 +397,9 @@ if __name__ == "__main__":
     row9 = [a9, b9, c9, d9, e9, f9, g9]
 
     blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
-    print(blanket)
     # blanket = random_blanket_algorithm(blanket)
-    blanket = even_distro_blanket_algorithm(blanket)
-
+    blanket,squares = even_distro_blanket_algorithm(blanket)
+    print(len(squares))
     #count_colors(blanket)
 
     draw_blanket(blanket, paper)
