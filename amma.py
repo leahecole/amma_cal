@@ -184,10 +184,13 @@ def display_blanket_dict(blanket):
 def draw_blanket(blanket, paper):
     for square in blanket:
         square.draw()
-    paper.display()
+    #paper.display()
+    return paper
 
 def random_blanket_algorithm(blanket):
     # this is a stupid algorithm that only generates random color patterns
+    #CURRENTLY BROKEN
+
     for row in blanket:
         for square in row:
             choices = [0,1,2,3,4,5,6,7]
@@ -275,24 +278,21 @@ def even_distro_blanket_algorithm(blanket):
 
     # this makes an even distro but it doesn't return the object when it's done
     def even_distro_no_repeats(squares, blanket, blanket_out):
-        print(len(squares.keys()), len(blanket))
     # base case - there are no squares left, return
         if len(blanket) == 0:
-            print("hello")
             return blanket_out
         else:
 
             colors = set_color(blanket[0])
-            print(colors)
             try:
-                squares[colors] = 1 # don't change the value, we don't want to increment
+                squares[colors] # this will be a KeyError if it hasn't been used
                 # remove colors from rect dicts - colors is a 3 digit integer
+                # these were incremented as part of set_color, and we don't want this to last
                 rect2[int(colors[0])]-=1
                 rect3[int(colors[1])]-=1
                 rect4[int(colors[2])]-=1
                 return even_distro_no_repeats(squares, blanket, blanket_out)
             except KeyError:
-                print("yo")
                 squares[colors] = 1
                 blanket_out.append(blanket[0])
                 return even_distro_no_repeats(squares, blanket[1:], blanket_out)
@@ -302,7 +302,7 @@ def even_distro_blanket_algorithm(blanket):
             # if it is there, return even_distro_no_repeats(squares, blanket) (try)
     blanket = even_distro_no_repeats(squares,blanket, [])
             
-    print(squares)
+    #print("squares", squares)
 
     return blanket, squares
 
@@ -397,12 +397,11 @@ if __name__ == "__main__":
     row9 = [a9, b9, c9, d9, e9, f9, g9]
 
     blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
-    # blanket = random_blanket_algorithm(blanket)
+    #blanket = random_blanket_algorithm(blanket)
     blanket,squares = even_distro_blanket_algorithm(blanket)
-    print(len(squares))
-    #count_colors(blanket)
+    count_colors(blanket)
 
-    draw_blanket(blanket, paper)
-    
+    p = draw_blanket(blanket, paper)
+    p.display()
     # display_blanket_dict(blanket)
 

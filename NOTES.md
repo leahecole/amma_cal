@@ -118,4 +118,10 @@ To do equals
 - store squares in a dict
 - when you make a new square, check dict before proceeding
 
-track square and check for dupes are kind of messed up and the weird three number key isn't working great
+track square and check for dupes are kind of messed up and the weird three number key isn't working great. 
+
+Update - back at it about 10 weeks later. This recursion was broken because I was never getting the exception I wanted in my try except. I fixed the recursion error, and now I need to fix the drawing. 
+
+Okay so cool recursion error is fixed when I just calculate, but when I go to draw, it's back? Mysteries abound. Something about the paper.display() function is causing problems. Okay no recursion error - but it's not drawing correctly. I tried running shapes directly and it's showing up all black. I'm also getting a system tk warning which is bad. This might be an apple silicon thing. Ugh. Going to try with Python 3.8 instead of Python 3.9. Oh, no, [Python docs](https://www.python.org/download/mac/tcltk/#activetcl-8-5-18-0) say I should do python 3.9.8 or later - I was previously using Python 3.9.1. 
+
+Hmm, no change. Right now when I try to run `python shapes.py` I just see black, same with my blanket. Is this a weird dark mode thing? No. it's not. It looks like I'm running tkinter 8.5 with pyenv. How can I force it to go 8.6? Ugh, I can with homebrew. [Thanks, Stackoverflow](https://stackoverflow.com/questions/60469202/unable-to-install-tkinter-with-pyenv-pythons-on-macos)
