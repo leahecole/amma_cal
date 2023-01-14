@@ -22,15 +22,16 @@ class Amma(Enum):
 
 @unique
 class Color(Enum):
-    CURRY = "#CB9834" # come back to this
+    CURRY = "#CB9834" # stone washed 812 lemon quartz
     ORANGE = "#F76A25" # River Washed 961
     RUSTIC_RED = "#C50909" # River washed 956
     PINK = "#E264B7" # Stone Washed 836
-    PURPLE = "#6B0CEB" # River Washed 949
+    PURPLE = "#6B0CEB" # River Washed 949 (to add)
     ROYAL_BLUE = "#0B8DD0" #stone washed 805
     TURQUOISE = "#2DBBDE" # River washed 950
     TEAL = "#108E45" # River Washed 958
-    BASE = "#E7D8BB" # Boulder Opal
+    # BASE = "#E7D8BB" # Boulder Opal
+    BASE = "#FFFAF6" # Moon stone
 
 # CONSTANTS
 SQUARE_WIDTH = 50
@@ -84,8 +85,11 @@ class AmmaSquare(Rectangle):
         self.rect4.y = self.rect3.y + interval
 
 
-    # A function that prints the parts of the Amma object I care about as a dictionary
-    def display(self):
+    def display(self) -> dict:
+        """
+        Prints the parts of the Amma object I care about as a dictionary
+
+        """
         readable_amma = {
             "Amma": self.amma.name,
             "Color 1": self.rect1.color_name,
@@ -97,20 +101,25 @@ class AmmaSquare(Rectangle):
         }
         return readable_amma
 
-    def display_colors(self):
+    def display_colors(self) -> dict:
+        # TODO: remove if not actually used?
         colors = self.display()
         del(colors["Amma"])
         del(colors["Row"])
         del(colors["Column"])
         return colors
 
-    def draw(self):
+    def draw(self) -> None:
         self.rect1.draw()
         self.rect2.draw()
         self.rect3.draw()
         self.rect4.draw()
 
-def ammaEquals(square1: AmmaSquare, square2: AmmaSquare):
+def ammaEquals(square1: AmmaSquare, square2: AmmaSquare) -> bool:
+    #TODO: remove if not needed
+    """
+    Compare two Amma squares to determine if they are equal
+    """
     # create dictionaries of square objects
     square1 = square1.display()
     square2 = square2.display()
@@ -123,17 +132,29 @@ def ammaEquals(square1: AmmaSquare, square2: AmmaSquare):
 
     # compare based on remaining keys, which are the colors
     return square1==square2
-    
-def makeAmmaFromDict(ammaDict):
+
+# run this on a single dict representing a square   
+def makeAmmaSquareFromDict(ammaDict):
     return AmmaSquare(amma=Amma[ammaDict["Amma"]], row=ammaDict["Row"], col=ammaDict["Column"], color_1=Color[ammaDict["Color 1"]], color_2=Color[ammaDict["Color 2"]], color_3=Color[ammaDict["Color 3"]], color_4=Color[ammaDict["Color 4"]])
 
-def count_colors(squares):
+def makeAmmaBlanketFromReadableBlanketList(readable_blanket: list):
+    blanket = []
+    for square_dict in readable_blanket:
+        blanket.append(makeAmmaSquareFromDict(square_dict))
+    return blanket
+
+
+def count_colors(squares: list) -> None:
+    """
+    squares: a list of lists of Amma squares
+    makes dictionaries for rect2, rect3, rect4, 
+    prints counts for each
+    """
     #count
     rect2 = {}
     rect3 = {}
     rect4 = {}
     for square in squares:
-        # print(square.display())
         try:
             rect2[square.rect2.color_name] += 1
         except KeyError:
@@ -166,10 +187,10 @@ def count_colors(squares):
     
 
     #display results
-    print(f"rect2 counts: {rect2}")
-    print(f"rect3 counts: {rect3}")
-    print(f"rect4 counts:{rect4}")
-    print(f"totals: {totals}")
+    #print(f"rect2 counts: {rect2}")
+    #print(f"rect3 counts: {rect3}")
+    #print(f"rect4 counts:{rect4}")
+    #print(f"totals: {totals}")
 
 # Display dicts of final blanket
 #TODO refactor to not rely on nested list structure
@@ -181,34 +202,38 @@ def display_blanket_dict(blanket):
         for square in range(len(blanket[row])):
             print(f"{str(column[square])}{str(row+1)} = {blanket[row][square].display()}")
 
-def draw_blanket(blanket, paper):
+def draw_blanket(blanket: list, paper: Paper) -> Paper:
+    """
+    blanket: list of list of AmmaSquare objects
+    goes through each square and "draws" it
+    returns the paper to be displayed in the main method
+    """
     for square in blanket:
         square.draw()
     #paper.display()
     return paper
 
+
 def random_blanket_algorithm(blanket):
     # this is a stupid algorithm that only generates random color patterns
-    #CURRENTLY BROKEN
 
-    for row in blanket:
-        for square in row:
-            choices = [0,1,2,3,4,5,6,7]
-            choice_1 = random.choice(choices) #only choose between non base colors
-            choices.remove(choice_1)
-            choice_2 = random.choice(choices)
-            choices.remove(choice_2)
-            choice_3 = random.choice(choices)
-            color_choice_1 = COLOR_LIST[choice_1]
-            color_choice_2 = COLOR_LIST[choice_2]
-            color_choice_3 = COLOR_LIST[choice_3]
-            square.rect2.set_color(color_choice_1.value)
-            square.rect2.color_name = color_choice_1.name 
-            square.rect3.set_color(color_choice_2.value)
-            square.rect3.color_name = color_choice_2.name
-            if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
-                square.rect4.set_color(color_choice_3.value)
-                square.rect4.color_name = color_choice_3.name 
+    for square in blanket:
+        choices = [0,1,2,3,4,5,6,7]
+        choice_1 = random.choice(choices) #only choose between non base colors
+        choices.remove(choice_1)
+        choice_2 = random.choice(choices)
+        choices.remove(choice_2)
+        choice_3 = random.choice(choices)
+        color_choice_1 = COLOR_LIST[choice_1]
+        color_choice_2 = COLOR_LIST[choice_2]
+        color_choice_3 = COLOR_LIST[choice_3]
+        square.rect2.set_color(color_choice_1.value)
+        square.rect2.color_name = color_choice_1.name 
+        square.rect3.set_color(color_choice_2.value)
+        square.rect3.color_name = color_choice_2.name
+        if square.amma != Amma.SAGA: #TODO: move this logic elsewhere
+            square.rect4.set_color(color_choice_3.value)
+            square.rect4.color_name = color_choice_3.name 
 
     return blanket
 
@@ -228,16 +253,19 @@ def even_distro_blanket_algorithm(blanket):
         finally:
             return choices
     def set_color(square):
+        #TODO: fix occasional IndexError
+
         # sets the colors but also returns a 3 number color that can be used for tracking
         # choose color one from all of the colors, as long as it hasn't been used 8 times
         choices = [choice for choice in rect2.keys() if rect2[choice] < 8]      
- 
+
         choice_1 = random.choice(choices) #only choose between non base colors
         rect2[choice_1]+=1
         
         # choose color 2 from all of the colors as long as it hasn't been used 8 times
         # and it wasn't color 1
-        choices = [choice for choice in rect3.keys() if rect3[choice] < 8]    
+        choices = [choice for choice in rect3.keys() if rect3[choice] < 8]  
+  
         choices = remove_choice(choices, choice_1)   
         choice_2 = random.choice(choices)
         rect3[choice_2]+=1
@@ -245,6 +273,7 @@ def even_distro_blanket_algorithm(blanket):
         # choose color 3 from all of the colors as long as it hasn't been used 7 times
         # and it wasn't color 1 or color 2
         choices = [choice for choice in rect4.keys() if rect4[choice] < 7] #this limit is smaller because there are only 51 possible squares instead of 63 like in other rounds       
+
         choices = remove_choice(choices, choice_1) 
         choices = remove_choice(choices, choice_2)   
         choice_3 = random.choice(choices)
@@ -272,12 +301,8 @@ def even_distro_blanket_algorithm(blanket):
         except KeyError:
             squares[square] = 1
 
-    # for square in blanket:
-    #     colors = set_color(square)
-    #     track_square(colors)
-
     # this makes an even distro but it doesn't return the object when it's done
-    def even_distro_no_repeats(squares, blanket, blanket_out):
+    def even_distro_no_repeats(squares: dict, blanket:list, blanket_out:list) -> list:
     # base case - there are no squares left, return
         if len(blanket) == 0:
             return blanket_out
@@ -303,7 +328,7 @@ def even_distro_blanket_algorithm(blanket):
     blanket = even_distro_no_repeats(squares,blanket, [])
             
     #print("squares", squares)
-
+    print(f"{rect2}, {rect3}, {rect4}")
     return blanket, squares
 
 
@@ -401,7 +426,22 @@ if __name__ == "__main__":
     blanket,squares = even_distro_blanket_algorithm(blanket)
     count_colors(blanket)
 
+    # make something readable that I can edit and pass back in
+    readable_blanket = []
+    for square in blanket:
+        s = square.display()
+        readable_blanket.append(s)
+    print(readable_blanket)
     p = draw_blanket(blanket, paper)
     p.display()
-    # display_blanket_dict(blanket)
+
+    # example drawing a blanket made from a readable list
+    # blanket2 = makeAmmaBlanketFromReadableBlanketList(readable_blanket)
+    # p = draw_blanket(blanket2, paper)
+    # p.display()
+
+
+    
+
+    #display_blanket_dict(readable_blanket)
 

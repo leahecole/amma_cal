@@ -125,3 +125,14 @@ Update - back at it about 10 weeks later. This recursion was broken because I wa
 Okay so cool recursion error is fixed when I just calculate, but when I go to draw, it's back? Mysteries abound. Something about the paper.display() function is causing problems. Okay no recursion error - but it's not drawing correctly. I tried running shapes directly and it's showing up all black. I'm also getting a system tk warning which is bad. This might be an apple silicon thing. Ugh. Going to try with Python 3.8 instead of Python 3.9. Oh, no, [Python docs](https://www.python.org/download/mac/tcltk/#activetcl-8-5-18-0) say I should do python 3.9.8 or later - I was previously using Python 3.9.1. 
 
 Hmm, no change. Right now when I try to run `python shapes.py` I just see black, same with my blanket. Is this a weird dark mode thing? No. it's not. It looks like I'm running tkinter 8.5 with pyenv. How can I force it to go 8.6? Ugh, I can with homebrew. [Thanks, Stackoverflow](https://stackoverflow.com/questions/60469202/unable-to-install-tkinter-with-pyenv-pythons-on-macos)
+
+Oct 30, 2022
+Random blanket method used to expect nested lists - I now just have one level of list, so I refactored to reflect that.
+
+Next - double check squares that are duplicates - it looks like dupes can still happen!
+Next: fix broken methods
+
+Next: Consider working from the outside in - rect4, rect3, rect2. 
+Next: squares that touch
+Next: Add type hints
+Next: add docstrings
