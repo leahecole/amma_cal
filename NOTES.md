@@ -136,3 +136,8 @@ Next: Consider working from the outside in - rect4, rect3, rect2.
 Next: squares that touch
 Next: Add type hints
 Next: add docstrings
+
+
+June 23, 2023
+Looking into dupe logic
+Three number keys for dicts - I never see it at 2 when there's two squares. Removing the increment. I also removed an unused "track_square" function. JK the increment is needed. 
