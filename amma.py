@@ -123,7 +123,7 @@ def ammaEquals(square1: AmmaSquare, square2: AmmaSquare) -> bool:
     square1 = square1.display()
     square2 = square2.display()
 
-    if (square1["Row"]!=square2["Row"]) and (square1["Column"]!=square2["Column"]):
+    if (square1["Row"]!=square2["Row"]) or (square1["Column"]!=square2["Column"]):
         # if they have the same colors
         # square type does not matter
         if (square1["Color 1"]==square2["Color 1"]) and \
@@ -417,6 +417,11 @@ if __name__ == "__main__":
     blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
     # blanket = random_blanket_algorithm(blanket)
     blanket,squares = even_distro_blanket_algorithm_2(blanket)
+    readable_blanket = []
+    for square in blanket:
+        s = square.display()
+        readable_blanket.append(s)
+    print(readable_blanket)    
     print(lookForDupes(blanket))
     # count_colors(blanket)
 

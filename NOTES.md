@@ -142,3 +142,4 @@ June 23, 2023
 Looking into dupe logic
 Three number keys for dicts - I never see it at 2 when there's two squares. Removing the increment. I also removed an unused "track_square" function. JK the increment is needed. 
 Removed old function about displaying blanket 
+I rewrote the function - next, look at color distribution within rows/columns - what if 2/3 of the colors in adjacent squares are the same? How to handle?
