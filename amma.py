@@ -114,14 +114,16 @@ class AmmaSquare(Rectangle):
         self.rect3.draw()
         self.rect4.draw()
 
+# LEAH this actually needs to be dicts as input - so it has to be square.display
 def ammaEquals(square1: AmmaSquare, square2: AmmaSquare) -> bool:
-    #TODO: refactor, this is not working properly and my brain is too tired
     """
     Compare two Amma squares to determine if they are equal
     """
     # they must have different row and columns
+    square1 = square1.display()
+    square2 = square2.display()
 
-    if (square1["Row"]==square2["Row"]) or (square2["Column"]==square2["Column"]):
+    if (square1["Row"]!=square2["Row"]) and (square1["Column"]!=square2["Column"]):
         # if they have the same colors
         # square type does not matter
         if (square1["Color 1"]==square2["Color 1"]) and \
@@ -198,22 +200,6 @@ def count_colors(squares: list) -> None:
             totals[key] = rect4[key]
     
 
-    #display results
-    #print(f"rect2 counts: {rect2}")
-    #print(f"rect3 counts: {rect3}")
-    #print(f"rect4 counts:{rect4}")
-    #print(f"totals: {totals}")
-
-# Display dicts of final blanket
-#TODO refactor to not rely on nested list structure
-# NOTE THIS CURRENTLY WON'T WORK
-def display_blanket_dict(blanket):
-    column = ["a", "b", "c", "d", "e", "f", "g"]
-
-    for row in range(len(blanket)):
-        for square in range(len(blanket[row])):
-            print(f"{str(column[square])}{str(row+1)} = {blanket[row][square].display()}")
-
 def draw_blanket(blanket: list, paper: Paper) -> Paper:
     """
     blanket: list of list of AmmaSquare objects
@@ -249,7 +235,8 @@ def random_blanket_algorithm(blanket):
 
     return blanket
 
-def even_distro_blanket_algorithm(blanket):
+
+def even_distro_blanket_algorithm_2(blanket):
     squares = {}
 
     rect2 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
@@ -305,37 +292,37 @@ def even_distro_blanket_algorithm(blanket):
             square.rect4.set_color(color_choice_3.value)
             square.rect4.color_name = color_choice_3.name
             rect4[choice_3]+=1
-        return f"{choice_1}{choice_2}{choice_3}"
+        return f"{choice_1}{choice_2}{choice_3}", square
 
     # this makes an even distro but it doesn't return the object when it's done
-    def even_distro_no_repeats(squares: dict, blanket:list, blanket_out:list) -> list:
-        print("blanket", len(blanket))
+    def even_distro_no_repeats(blanket:list, blanket_out:list) -> list:
     # base case - there are no squares left, return
         if len(blanket) == 0:
             return blanket_out
         else:
-            colors = set_color(blanket[0])
-            print("colors", colors)
-            try:
-                squares[colors] # this will be a KeyError if it hasn't been used
+            colors, square = set_color(blanket[0])
+            # compare this square to the rest of the squares in out
+            duplicate = False
+            for i in range(len(blanket_out)):
+                equal = ammaEquals(square, blanket_out[i])
+
+                if equal:
+                    duplicate = True
+                    break
+            
+            if duplicate:
                 # remove colors from rect dicts - colors is a 3 digit integer
                 # these were incremented as part of set_color, and we don't want this to last
-                print("squares[colors]", squares[colors])
                 rect2[int(colors[0])]-=1
                 rect3[int(colors[1])]-=1
                 rect4[int(colors[2])]-=1
-                return even_distro_no_repeats(squares, blanket, blanket_out)
-            except KeyError:
-                squares[colors] = 1
-                blanket_out.append(blanket[0])
-                return even_distro_no_repeats(squares, blanket[1:], blanket_out)
-    blanket = even_distro_no_repeats(squares,blanket, [])
-            
-    print("squares", squares)
-    print('squares keys', len(squares.keys()))
-    # print(f"{rect2}, {rect3}, {rect4}")
-    return blanket, squares
+                return even_distro_no_repeats(blanket, blanket_out)
+            else:
+                blanket_out.append(square)
+                return even_distro_no_repeats(blanket[1:], blanket_out)
+    blanket = even_distro_no_repeats(blanket, [])
 
+    return blanket, squares
 
 
 if __name__ == "__main__":
@@ -426,40 +413,36 @@ if __name__ == "__main__":
     row8 = [a8, b8, c8, d8, e8, f8, g8]
     row9 = [a9, b9, c9, d9, e9, f9, g9]
 
-    # blanket = row1+row2+row3
+    # blanket = row1+row2+row3+row4
     blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
-    blanket = random_blanket_algorithm(blanket)
-    # blanket,squares = even_distro_blanket_algorithm(blanket)
+    # blanket = random_blanket_algorithm(blanket)
+    blanket,squares = even_distro_blanket_algorithm_2(blanket)
+    print(lookForDupes(blanket))
+    # count_colors(blanket)
 
-    count_colors(blanket)
-
-    # make something readable that I can edit and pass back in
-    readable_blanket = []
-    for square in blanket:
-        s = square.display()
-        readable_blanket.append(s)
-    print(readable_blanket)
-    print(lookForDupes(readable_blanket))
+    # dupeInstances = 0
+    # for i in range(10000):
+    #     print(i)
+    #     # blanket = row1+row2+row3+row4
+    #     blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
+    # # blanket = random_blanket_algorithm(blanket)
+    #     blanket,squares = even_distro_blanket_algorithm_2(blanket)
+    #     # make something readable that I can edit and pass back in
+    #     readable_blanket = []
+    #     for square in blanket:
+    #         s = square.display()
+    #         readable_blanket.append(s)
+    #     l = lookForDupes(readable_blanket)
+    #     if len(l) > 0:
+    #         dupeInstances+=1
+    # print(dupeInstances)
 
     p = draw_blanket(blanket, paper)
     p.display()
 
 
-    # example = [{'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'ROYAL_BLUE', 'Color 3': 'CURRY', 'Color 4': 'BASE', 'Row': 1, 'Column': 1}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'PINK', 'Color 4': 'TURQUOISE', 'Row': 1, 'Column': 2}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'ORANGE', 'Color 4': 'PURPLE', 'Row': 1, 'Column': 3}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'RUSTIC_RED', 'Row': 1, 'Column': 4}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'RUSTIC_RED', 'Row': 1, 'Column': 5}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'PINK', 'Color 4': 'BASE', 'Row': 1, 'Column': 6}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'ROYAL_BLUE', 'Color 3': 'CURRY', 'Color 4': 'PINK', 'Row': 1, 'Column': 7}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'CURRY', 'Color 4': 'PURPLE', 'Row': 2, 'Column': 1}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'CURRY', 'Color 3': 'RUSTIC_RED', 'Color 4': 'ORANGE', 'Row': 2, 'Column': 2}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'PURPLE', 'Color 4': 'CURRY', 'Row': 2, 'Column': 3}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'TURQUOISE', 'Row': 2, 'Column': 4}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'PINK', 'Color 4': 'BASE', 'Row': 2, 'Column': 5}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'CURRY', 'Color 4': 'ORANGE', 'Row': 2, 'Column': 6}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'PURPLE', 'Color 4': 'TEAL', 'Row': 2, 'Column': 7}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'CURRY', 'Color 3': 'PINK', 'Color 4': 'ORANGE', 'Row': 3, 'Column': 1}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'CURRY', 'Color 4': 'TEAL', 'Row': 3, 'Column': 2}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'RUSTIC_RED', 'Color 4': 'PURPLE', 'Row': 3, 'Column': 3}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'PINK', 'Color 4': 'BASE', 'Row': 3, 'Column': 4}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'RUSTIC_RED', 'Color 4': 'TURQUOISE', 'Row': 3, 'Column': 5}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'TEAL', 'Color 4': 'ORANGE', 'Row': 3, 'Column': 6}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'PINK', 'Color 4': 'CURRY', 'Row': 3, 'Column': 7}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'ORANGE', 'Color 4': 'RUSTIC_RED', 'Row': 4, 'Column': 1}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'ORANGE', 'Color 4': 'RUSTIC_RED', 'Row': 4, 'Column': 2}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'PURPLE', 'Color 4': 'BASE', 'Row': 4, 'Column': 3}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'RUSTIC_RED', 'Color 4': 'ROYAL_BLUE', 'Row': 4, 'Column': 4}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'CURRY', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'PINK', 'Row': 4, 'Column': 5}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'PINK', 'Row': 4, 'Column': 6}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'ROYAL_BLUE', 'Color 3': 'PINK', 'Color 4': 'TEAL', 'Row': 4, 'Column': 7}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'CURRY', 'Color 4': 'RUSTIC_RED', 'Row': 5, 'Column': 1}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'PINK', 'Color 4': 'BASE', 'Row': 5, 'Column': 2}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'CURRY', 'Color 3': 'PURPLE', 'Color 4': 'ROYAL_BLUE', 'Row': 5, 'Column': 3}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'ROYAL_BLUE', 'Color 3': 'PURPLE', 'Color 4': 'ORANGE', 'Row': 5, 'Column': 4}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'TURQUOISE', 'Color 4': 'RUSTIC_RED', 'Row': 5, 'Column': 5}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'ORANGE', 'Color 4': 'RUSTIC_RED', 'Row': 5, 'Column': 6}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'CURRY', 'Color 3': 'TEAL', 'Color 4': 'BASE', 'Row': 5, 'Column': 7}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'RUSTIC_RED', 'Color 4': 'BASE', 'Row': 6, 'Column': 1}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'TURQUOISE', 'Color 4': 'CURRY', 'Row': 6, 'Column': 2}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'TEAL', 'Color 4': 'CURRY', 'Row': 6, 'Column': 3}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'CURRY', 'Color 4': 'ORANGE', 'Row': 6, 'Column': 4}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'PURPLE', 'Color 4': 'TEAL', 'Row': 6, 'Column': 5}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'TEAL', 'Color 4': 'BASE', 'Row': 6, 'Column': 6}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'TEAL', 'Color 4': 'TURQUOISE', 'Row': 6, 'Column': 7}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'CURRY', 'Color 3': 'ORANGE', 'Color 4': 'ROYAL_BLUE', 'Row': 7, 'Column': 1}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'CURRY', 'Color 3': 'TURQUOISE', 'Color 4': 'PURPLE', 'Row': 7, 'Column': 2}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'PURPLE', 'Color 4': 'ROYAL_BLUE', 'Row': 7, 'Column': 3}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'RUSTIC_RED', 'Color 4': 'ROYAL_BLUE', 'Row': 7, 'Column': 4}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'TEAL', 'Color 4': 'BASE', 'Row': 7, 'Column': 5}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'ROYAL_BLUE', 'Color 3': 'CURRY', 'Color 4': 'TURQUOISE', 'Row': 7, 'Column': 6}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'PURPLE', 'Row': 7, 'Column': 7}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'TURQUOISE', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'ORANGE', 'Row': 8, 'Column': 1}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'PURPLE', 'Color 4': 'ROYAL_BLUE', 'Row': 8, 'Column': 2}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'RUSTIC_RED', 'Color 4': 'TURQUOISE', 'Row': 8, 'Column': 3}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'TURQUOISE', 'Color 4': 'BASE', 'Row': 8, 'Column': 4}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'ROYAL_BLUE', 'Color 4': 'CURRY', 'Row': 8, 'Column': 5}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'ORANGE', 'Color 4': 'PURPLE', 'Row': 8, 'Column': 6}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'ORANGE', 'Color 4': 'PINK', 'Row': 8, 'Column': 7}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'TEAL', 'Color 3': 'RUSTIC_RED', 'Color 4': 'ROYAL_BLUE', 'Row': 9, 'Column': 1}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'TEAL', 'Color 4': 'CURRY', 'Row': 9, 'Column': 2}, {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'RUSTIC_RED', 'Color 3': 'TEAL', 'Color 4': 'BASE', 'Row': 9, 'Column': 3}, {'Amma': 'LOLA', 'Color 1': 'BASE', 'Color 2': 'ORANGE', 'Color 3': 'TURQUOISE', 'Color 4': 'PINK', 'Row': 9, 'Column': 4}, {'Amma': 'MARIA', 'Color 1': 'BASE', 'Color 2': 'ROYAL_BLUE', 'Color 3': 'ORANGE', 'Color 4': 'TURQUOISE', 'Row': 9, 'Column': 5}, {'Amma': 'THORA', 'Color 1': 'BASE', 'Color 2': 'PINK', 'Color 3': 'TURQUOISE', 'Color 4': 'TEAL', 'Row': 9, 'Column': 6}, {'Amma': 'TINNA', 'Color 1': 'BASE', 'Color 2': 'ROYAL_BLUE', 'Color 3': 'TURQUOISE', 'Color 4': 'TEAL', 'Row': 9, 'Column': 7}]
-    # print("dupes")
-    # a = lookForDupes(example)
-    # print(lookForDupes(example))
-    # a = {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'PINK', 'Color 4': 'BASE', 'Row': 1, 'Column': 6}
-    # b = {'Amma': 'SAGA', 'Color 1': 'BASE', 'Color 2': 'PURPLE', 'Color 3': 'PINK', 'Color 4': 'BASE', 'Row': 2, 'Column': 5}
-    # print(example[0], example[1])
-    # print(ammaEquals(example[0], example[1]))
-    # example drawing a blanket made from a readable list
-    # blanket2 = makeAmmaBlanketFromReadableBlanketList(example)
-    # p = draw_blanket(blanket2, paper)
-    # p.display()
 
 
     
 
-    #display_blanket_dict(readable_blanket)
 
