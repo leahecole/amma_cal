@@ -3,6 +3,7 @@
 from shapes import Paper, Rectangle, Shape
 from enum import Enum, unique
 import random
+# TODO Coleleah consider using backoff to wrap indexerrors
 
 
 
@@ -114,7 +115,6 @@ class AmmaSquare(Rectangle):
         self.rect3.draw()
         self.rect4.draw()
 
-# LEAH this actually needs to be dicts as input - so it has to be square.display
 def ammaEquals(square1: AmmaSquare, square2: AmmaSquare) -> bool:
     """
     Compare two Amma squares to determine if they are equal
@@ -198,8 +198,29 @@ def count_colors(squares: list) -> None:
             totals[key] += rect4[key]
         except KeyError:
             totals[key] = rect4[key]
+    print(totals)
     
+def row_col_to_index(row: int, col: int) -> int:
+    # takes in a 1 index based row, col coordinate and figures out what 0 based index in a blanket list a square is
+    # based on a blanket with 9 rows and 7 columns
+    # does NO error checking
+    return ((col-1) + ((row-1)*7))
 
+def get_above_side_square(square:AmmaSquare):
+    # returns one to two amma squares or none
+    row = square.row
+    col = square.col
+    above_index = row_col_to_index(row-1, col)
+    side_index = row_col_to_index(row, col-1)
+    # initially set these to None, set them to a square if it exists
+    # on the edges, one or both may not exist
+    above_square = None
+    side_square = None
+    if (row-1) > 0:
+        above_square = blanket[row_col_to_index(row-1, col)] # row-1, col
+    if (col-1) > 0:
+        side_square = blanket[row_col_to_index(row, col-1)] # row col-1
+    return above_square, side_square
 def draw_blanket(blanket: list, paper: Paper) -> Paper:
     """
     blanket: list of list of AmmaSquare objects
@@ -242,25 +263,28 @@ def even_distro_blanket_algorithm_2(blanket):
     rect2 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     rect3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
     rect4 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
-    # this is an algorithm to make even color distrubition in each row. I refactored it while very tired and it's very ugly
+    # this is an algorithm to make even color distrubition in each round. I refactored it while very tired and it's very ugly
     def remove_choice(choices, choice):
         try:
             choices.remove(choice)
         except ValueError:
             log = f"Choice {choice} not in choices. Likely ineligible for other reasons"
-            #print(log)
+            # print(log)
         finally:
             return choices
     def set_color(square):
         #TODO: fix occasional IndexError
 
         # sets the colors but also returns a 3 number color that can be used for tracking
+
+        ### COLOR 1 LOGIC ###
         # choose color one from all of the colors, as long as it hasn't been used 8 times
         choices = [choice for choice in rect2.keys() if rect2[choice] < 8]      
 
         choice_1 = random.choice(choices) #only choose between non base colors
         rect2[choice_1]+=1
         
+        ### COLOR 2 LOGIC ###
         # choose color 2 from all of the colors as long as it hasn't been used 8 times
         # and it wasn't color 1
         choices = [choice for choice in rect3.keys() if rect3[choice] < 8]  
@@ -268,6 +292,8 @@ def even_distro_blanket_algorithm_2(blanket):
         choices = remove_choice(choices, choice_1)   
         choice_2 = random.choice(choices)
         rect3[choice_2]+=1
+
+        ### COLOR 3 LOGIC ###
 
         # choose color 3 from all of the colors as long as it hasn't been used 7 times
         # and it wasn't color 1 or color 2
@@ -323,25 +349,153 @@ def even_distro_blanket_algorithm_2(blanket):
     blanket = even_distro_no_repeats(blanket, [])
 
     return blanket, squares
+def even_distro_blanket_algorithm_out_to_in(blanket):
+    rect2 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
+    rect3 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
+    rect4 = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
+    def set_rect_color(square, rect, above_square=None, side_square=None):
 
+        if (rect!=2) and (rect!=3) and (rect!=4):
+            raise ValueError("Must be equal to 2 3 or 4")
+        if rect==2:
+            # print(above_square.display(), side_square.display())
+            ### COLOR 1 LOGIC ###
+            # choose color one from all of the colors, as long as it hasn't been used 8 times
+            # and wasn't used in (row-1, col).rect2 or (row, col-1).rect2   
+            keyslist = list(rect2.keys())
+            if above_square:
+                above_square_color_name = above_square.rect2.color_name
+                index = COLOR_LIST.index(Color[above_square_color_name])
+                try:
+                    keyslist.remove(index) # remove 
+                except ValueError:
+                    pass
+                    # print("Already removed")
+            if side_square:
+                side_square_color_name = side_square.rect2.color_name
+                index = COLOR_LIST.index(Color[side_square_color_name])
+                try:
+                    keyslist.remove(index) # remove
+                except ValueError:
+                    pass
+                    # print("Already removed")
+            choices = [choice for choice in keyslist if rect2[choice] < 8]      
+            choice_1 = random.choice(choices) #only choose between non base colors
+            rect2[choice_1]+=1
+            color_choice_1 = COLOR_LIST[choice_1]
+            square.rect2.set_color(color_choice_1.value)
+            square.rect2.color_name = color_choice_1.name
+        if rect==3:
+            ### COLOR 2 LOGIC ###
+            # choose color one from all of the colors, as long as it hasn't been used 8 times and wasn't color 1
+            # and wasn't used in (row-1, col).rect3 or (row, col-1).rect3           
+            keyslist = list(rect3.keys())
+            if above_square:
+                above_square_color_name = above_square.rect3.color_name
+                index = COLOR_LIST.index(Color[above_square_color_name])
+                try:
+                    keyslist.remove(index) # remove 
+                except ValueError:
+                    pass
+                    # print("Already removed")
+            if side_square:
+                side_square_color_name = side_square.rect3.color_name
+                index = COLOR_LIST.index(Color[side_square_color_name])
+                try:
+                    keyslist.remove(index) # remove
+                except ValueError:
+                    pass
+                    # print("Already removed")
+            color1_name = square.rect2.color_name
+            index = COLOR_LIST.index(Color[color1_name])
+            try:
+                keyslist.remove(index) # remove 
+            except ValueError:
+                pass #Already removed
+            choices = [choice for choice in keyslist if rect3[choice] < 8]      
+            choice_2 = random.choice(choices) #only choose between non base colors
+            rect3[choice_2]+=1
+            color_choice_2 = COLOR_LIST[choice_2]
+            square.rect3.set_color(color_choice_2.value)
+            square.rect3.color_name = color_choice_2.name
+        if rect==4:
+            ### COLOR 3 LOGIC ###
+            # choose color one from all of the colors, as long as it hasn't been used 8 times and wasn't color 1 or color 2
+            # and wasn't used in (row-1, col).rect4 or (row, col-1).rect4
+            if square.amma != Amma.SAGA:
+                keyslist = list(rect4.keys())
+                if above_square:
+                    above_square_color_name = above_square.rect4.color_name
+                    index = COLOR_LIST.index(Color[above_square_color_name])
+                    try:
+                        keyslist.remove(index) # remove 
+                    except ValueError:
+                        pass
+                        # print("Already removed")
+                if side_square:
+                    side_square_color_name = side_square.rect4.color_name
+                    index = COLOR_LIST.index(Color[side_square_color_name])
+                    try:
+                        keyslist.remove(index) # remove
+                    except ValueError:
+                        pass
+                    # print("Already removed")
+                color1_name = square.rect2.color_name
+                color2_name = square.rect3.color_name
+                index1 = COLOR_LIST.index(Color[color1_name])
+                index2 = COLOR_LIST.index(Color[color2_name])
+                try:
+                    keyslist.remove(index1) # remove 
+                except ValueError:
+                    pass #already removed
+                try: 
+                    keyslist.remove(index2) # remove 
+                except ValueError:
+                    pass #already removed
+
+                choices = [choice for choice in keyslist if rect4[choice] < 8]      
+                choice_3 = random.choice(choices) #only choose between non base colors
+                rect4[choice_3]+=1
+                color_choice_3 = COLOR_LIST[choice_3]
+                square.rect4.set_color(color_choice_3.value)
+                square.rect4.color_name = color_choice_3.name
+
+            
+
+
+    # First pass - go through and choose colors for each of rect2
+    for square in blanket:
+        above_square, side_square = get_above_side_square(square)
+        set_rect_color(square,2, above_square, side_square)
+    # second pass
+    for square in blanket:
+        above_square, side_square = get_above_side_square(square)
+        set_rect_color(square,3, above_square, side_square)
+    # third pass
+    for square in blanket:
+        above_square, side_square = get_above_side_square(square)
+        set_rect_color(square,4)
+   
+
+    return blanket
 
 if __name__ == "__main__":
     paper = Paper(width=1000,height=1000)
 
     # 
     # Example Amma Squares
-    a1 = AmmaSquare(amma=Amma.SAGA, row=1, col=1, color_2=Color.CURRY, color_3=Color.ROYAL_BLUE)
-    b1 = AmmaSquare(amma=Amma.LOLA, row=1, col=2, color_2=Color.RUSTIC_RED, color_3=Color.BASE, color_4=Color.BASE)
-    c1 = AmmaSquare(amma=Amma.MARIA, row=1, col=3,  color_2=Color.ORANGE, color_3=Color.BASE, color_4=Color.BASE)
-    d1 = AmmaSquare(amma=Amma.THORA, row=1, col=4, color_2=Color.TURQUOISE, color_3=Color.BASE, color_4=Color.BASE)
-    e1 = AmmaSquare(amma=Amma.TINNA, row=1, col=5, color_2=Color.TEAL, color_3=Color.BASE, color_4=Color.BASE)
-    f1 = AmmaSquare(amma=Amma.SAGA, row=1, col=6, color_2=Color.PINK, color_3=Color.BASE, color_4=Color.BASE)
-    g1 = AmmaSquare(amma=Amma.LOLA, row=1, col=7, color_2=Color.PURPLE, color_3=Color.BASE, color_4=Color.BASE)
+    a1 = AmmaSquare(amma=Amma.SAGA, row=1, col=1, color_2=Color.BASE, color_3=Color.BASE)
+    b1 = AmmaSquare(amma=Amma.LOLA, row=1, col=2, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
+    c1 = AmmaSquare(amma=Amma.MARIA, row=1, col=3,  color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
+    d1 = AmmaSquare(amma=Amma.THORA, row=1, col=4, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
+    e1 = AmmaSquare(amma=Amma.TINNA, row=1, col=5, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
+    f1 = AmmaSquare(amma=Amma.SAGA, row=1, col=6, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
+    g1 = AmmaSquare(amma=Amma.LOLA, row=1, col=7, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
 
     a2 = AmmaSquare(amma=Amma.LOLA, row=2, col=1, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
     b2 = AmmaSquare(amma=Amma.MARIA, row=2, col=2, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
     c2 = AmmaSquare(amma=Amma.THORA, row=2, col=3, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
-    d2 = AmmaSquare(amma=Amma.TINNA, row=2, col=4, color_2=Color.RUSTIC_RED, color_3=Color.BASE, color_4=Color.BASE)
+    d2 = AmmaSquare(amma=Amma.TINNA, row=2, col=4, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
     e2 = AmmaSquare(amma=Amma.SAGA, row=2, col=5, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
     f2 = AmmaSquare(amma=Amma.LOLA, row=2, col=6, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
     g2 = AmmaSquare(amma=Amma.MARIA, row=2, col=7, color_2=Color.BASE, color_3=Color.BASE, color_4=Color.BASE)
@@ -416,31 +570,23 @@ if __name__ == "__main__":
     # blanket = row1+row2+row3+row4
     blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
     # blanket = random_blanket_algorithm(blanket)
-    blanket,squares = even_distro_blanket_algorithm_2(blanket)
+    # blanket,squares = even_distro_blanket_algorithm_2(blanket)
+    
+    blanket = even_distro_blanket_algorithm_out_to_in(blanket)
+
+
+
     readable_blanket = []
     for square in blanket:
         s = square.display()
         readable_blanket.append(s)
     print(readable_blanket)    
-    print(lookForDupes(blanket))
+    dupes = lookForDupes(blanket)
+    dupesList = []
+    for dupe in dupes:
+        dupesList.append(dupe.display())
+    print(dupesList)
     # count_colors(blanket)
-
-    # dupeInstances = 0
-    # for i in range(10000):
-    #     print(i)
-    #     # blanket = row1+row2+row3+row4
-    #     blanket = row1+row2+row3+row4+row5+row6+row7+row8+row9
-    # # blanket = random_blanket_algorithm(blanket)
-    #     blanket,squares = even_distro_blanket_algorithm_2(blanket)
-    #     # make something readable that I can edit and pass back in
-    #     readable_blanket = []
-    #     for square in blanket:
-    #         s = square.display()
-    #         readable_blanket.append(s)
-    #     l = lookForDupes(readable_blanket)
-    #     if len(l) > 0:
-    #         dupeInstances+=1
-    # print(dupeInstances)
 
     p = draw_blanket(blanket, paper)
     p.display()

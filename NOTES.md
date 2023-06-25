@@ -143,3 +143,16 @@ Looking into dupe logic
 Three number keys for dicts - I never see it at 2 when there's two squares. Removing the increment. I also removed an unused "track_square" function. JK the increment is needed. 
 Removed old function about displaying blanket 
 I rewrote the function - next, look at color distribution within rows/columns - what if 2/3 of the colors in adjacent squares are the same? How to handle?
+
+Should I make a shuffle function?
+
+Is it worth using a priority queue to decide on colors? Determine priority by:
+* colors that have been used less
+* colors that are not the surrounding colors
+
+Consider also an algorithm that first does all of the round 1s, then the round 2s, then the round 3s
+
+June 25, 2023
+^ the loop algorithm is implemented. It definitely indexerrors more than the other but oh well. Let's expand to have it be aware of squares around it. Consider a square with coordinates (row, col). It needs to look at (row-1, col) and (row, col-1). it cannot look ahead of itself. So, let's remove those from its choices. Unfortunately we will have to do some math to figure out what index of the list it will be. let's make a helper function. omg I used 1 based indexing for the coordinates. Whatever. 
+
+Things are going well! Except, I figured out that you can end up with duplicates for SAGA squares when you change the middle square color after the fact! Yikes!
