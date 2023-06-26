@@ -155,4 +155,7 @@ Consider also an algorithm that first does all of the round 1s, then the round 2
 June 25, 2023
 ^ the loop algorithm is implemented. It definitely indexerrors more than the other but oh well. Let's expand to have it be aware of squares around it. Consider a square with coordinates (row, col). It needs to look at (row-1, col) and (row, col-1). it cannot look ahead of itself. So, let's remove those from its choices. Unfortunately we will have to do some math to figure out what index of the list it will be. let's make a helper function. omg I used 1 based indexing for the coordinates. Whatever. 
 
-Things are going well! Except, I figured out that you can end up with duplicates for SAGA squares when you change the middle square color after the fact! Yikes!
+Things are going well! Except, I figured out that you can end up with duplicates.
+Maybe I address duplicates after? Sure. So with lookForDupes you get a list of squares that are duplicates. Every other one has identical colors so you'd either need to change all odd or all even index squares. 
+
+I made something that can check for duplicates but it hits indexerrors a lot - I really need to handle retries on those
