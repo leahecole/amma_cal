@@ -12,6 +12,7 @@ Do you want to know my thought process? Check out [my notes](NOTES.md)
 1. If you want to use this with a different color palette, update the enum of colors to have the hex values that you want. 
 1. If necessary, update the SQUARE_WIDTH constant to be the number of pixels you want your squares to be
 1. run `python amma.py`
+2. If the code does not successfully finish, try again. The algorithm is not guaranteed to succeed as is.
 
 # Attribution
 The code found in [shapes.py](./shapes.py) came from [this tutorial](https://www.futurelearn.com/info/courses/object-oriented-principles/0/steps/31483) and I am importing it in my main [amma.py](./amma.py) file. Fwiw, I would not have chosen this license, but because I am utilizing underlying code with this license and modifying it to fit my needs, CC requires I use this license. 
@@ -27,21 +28,5 @@ This work is licensed under a
 [cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
 [cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
 
-# TODO
-- [x] start out by making each square only fill with white
-- [x] properly annotate the Amma type of each square
-- [x] create enums of the colors used
-- [x] update SAGA squares to fill with the base color on the inner rectangle
-- [x] add functions to compute subsquares with each color
-- [x] experiment with color
-- [ ] add more logic to protect square 4 of Amma.SAGA
-- [x] work on even distro algorithm
-- [ ] think about classification tree to decide color distribution
-- [ ] ensure no two squares are identical
-- [ ] incorporate Amma type into decision algorithm (maybe?)
-
-# Would be nice TODO
-- [x] programmatically generate positioning
-- [x] encode row/column into square object
 
 
